@@ -1,27 +1,21 @@
-import xml.etree.ElementTree as ET
+# main.py
 
-from Controlador.mazo_controlador import MazoControlador
-from Vista.mazo_vista import mostrar_mazo
-
-from Controlador.jugadores_controlador import JugadoresControlador
-from Vista.jugadores_vista import mostrar_jugadores
-
+import tkinter as tk
+from Vista.mazo_vista import MazoView
+from Controlador.partida_controlador import PartidaController
 
 def main():
-    ruta = "entrada.xml"
+    root = tk.Tk()
+    view = MazoView(root)
+    controller = PartidaController(view)
+    view.set_controller(controller)
 
-    # imprimir mazo
-    print("=== MAZO DE CARTAS PARA EL JUEGO ===")
-    controlador_mazo = MazoControlador()
-    controlador_mazo.cargar_cartas(ruta)
-    mostrar_mazo(controlador_mazo.mazo)
+    # Mensaje inicial de bienvenida o estado
+    view.log_message("Aplicación 'Card Clash: IPC2 Edition' iniciada.")
+    view.log_message("Por favor, cargue un archivo XML de configuración para empezar.")
 
-    # imprimir los jugadores
-    print("\n=== JUGADORES CARGADOS PARA EL JUEGO ===")
-    controlador_jugadores = JugadoresControlador()
-    controlador_jugadores.cargar_jugadores(ruta)
-    mostrar_jugadores(controlador_jugadores.jugadores)
 
+    root.mainloop()
 
 if __name__ == "__main__":
     main()
