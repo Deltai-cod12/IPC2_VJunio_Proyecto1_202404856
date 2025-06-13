@@ -225,3 +225,16 @@ class MazoView:
         self.log_message(message) # Tambien registrar en el log
         self.game_over_label.config(text=message, foreground="red") # Mostrar mensaje de fin de juego de forma destacada
         self.disable_play_button() # Deshabilitar el boton "Siguiente Turno" para evitar mas jugadas
+        
+    def display_available_partidas(self, partida_names: list[str]):
+        print(">>> DEBUG - Partidas recibidas por vista:", partida_names)
+        for p in partida_names:
+            print("    -", p, type(p))
+
+        self.partida_combobox['values'] = partida_names
+        if partida_names:
+            self.partida_combobox.set("Seleccionar una partida...") # Placeholder
+        else:
+            self.partida_combobox.set("No hay partidas disponibles")
+            self.partida_combobox['values'] = []
+            self.disable_game_selection()

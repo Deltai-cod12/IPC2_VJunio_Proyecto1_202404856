@@ -43,16 +43,168 @@ class PilaCartasMesa:
         return self.cima is None
     
     def get_display_string(self) -> str:
-        """Para debug: muestra la pila como cadena (útil en logs)"""
-        if self.esta_vacia():
-            return "Pila vacía"
+        if self.size == 0:
+            return "Lista vacia."
         
-        actual = self.cima
-        cartas_str = []
-        while actual:
-            cartas_str.append(str(actual.carta))
+        current = self.primero
+        items_str = ""
+        count = 0
+        while current and count < self.size:
+            # Usa .name porque el atributo es así en PartidaConfigData
+            # Para otros tipos, puedes poner un fallback con getattr
+            item = current.data
+            nombre_a_mostrar = getattr(item, 'name', str(item))
+            items_str += str(nombre_a_mostrar)
+            current = current.siguiente
+            count += 1
+            if current and count < self.size:
+                items_str += " -> "
+        return items_str
+
+
+
+    
+class ListaLinealCartas:
+    def __init__(self):
+        self.primero = None
+        self.ultimo = None
+        self.size = 0
+
+    def agregar_final(self, carta):
+        nuevo = NodoCarta(carta)
+        if not self.primero:
+            self.primero = nuevo
+            self.ultimo = nuevo
+        else:
+            self.ultimo.siguiente = nuevo
+            self.ultimo = nuevo
+        self.size += 1
+
+    def obtener_por_indice(self, indice):
+        if indice < 0 or indice >= self.size:
+            return None
+        actual = self.primero
+        for _ in range(indice):
             actual = actual.siguiente
-        return " -> ".join(cartas_str)
+        return actual.carta
+
+    def eliminar_en_posicion(self, indice):
+        if indice < 0 or indice >= self.size:
+            return None
+
+        actual = self.primero
+        anterior = None
+
+        for i in range(indice):
+            anterior = actual
+            actual = actual.siguiente
+
+        if anterior is None:
+            # Eliminar el primero
+            self.primero = actual.siguiente
+            if self.size == 1:
+                self.ultimo = None
+        else:
+            anterior.siguiente = actual.siguiente
+            if actual == self.ultimo:
+                self.ultimo = anterior
+
+        self.size -= 1
+        return actual.carta
+
+    def limpiar(self):
+        self.primero = None
+        self.ultimo = None
+        self.size = 0
+
+    def get_display_string(self):
+        resultado = ""
+        actual = self.primero
+        primero = True
+        while actual:
+            if not primero:
+                resultado += ", "
+            resultado += str(actual.carta)
+            primero = False
+            actual = actual.siguiente
+        return resultado
+
+
+    
+class Nodo:
+    def __init__(self, data: str):
+        self.data = data
+        self.siguiente = None
+
+class PilaStr:
+    def __init__(self):
+        self.inicio = None  
+
+    def push(self, data: str):
+        nuevo = Nodo(data)
+        if not self.inicio:
+            self.inicio = nuevo
+        else:
+            actual = self.inicio
+            while actual.siguiente:
+                actual = actual.siguiente
+            actual.siguiente = nuevo
+
+    def pop(self) -> Union[str, None]:
+        if not self.inicio:
+            return None
+        if not self.inicio.siguiente:
+            data = self.inicio.data
+            self.inicio = None
+            return data
+        
+        actual = self.inicio
+        while actual.siguiente and actual.siguiente.siguiente:
+            actual = actual.siguiente
+        data = actual.siguiente.data
+        actual.siguiente = None
+        return data
+
+    def esta_vacia(self) -> bool:
+        return self.inicio is None
+
+    def limpiar(self):
+        self.inicio = None
+        
+    def clear(self):
+        self.limpiar()
+
+    def imprimir_cronologico(self):
+        actual = self.inicio
+        while actual:
+            print(actual.data)
+            actual = actual.siguiente
+            
+    def obtener_como_lista(self) -> list:
+        resultado = []
+        actual = self.inicio 
+        while actual:
+            resultado.append(actual.data)
+            actual = actual.siguiente
+        return resultado
+
+
+
+    
+    def __len__(self):
+        actual = self.inicio
+        count = 0
+        while actual:
+            count += 1
+            actual = actual.siguiente
+        return count
+    
+    def __iter__(self):
+        actual = self.inicio
+        while actual:
+            yield actual.data
+            actual = actual.siguiente
+
 
 # Nodo para la Lista Circular Simplemente Enlazada para el mazo
 class NodoCarta:
@@ -191,72 +343,69 @@ class ListaCartas:
 
 
     def faro_shuffle(self):
-        
         if self.size != 51:
             print(f"DEBUG: Faro Shuffle requiere 51 cartas. Tamaño actual: {self.size}.")
             return
 
         print("DEBUG: Iniciando FARO_SHUFFLE (implementacion exacta de la logica de usuario)...")
 
-        #Extraer todas las cartas del mazo actual a una ListaGenerica 
+        # Extraer todas las cartas del mazo actual a una ListaGenerica
         temp_original_deck_lg = ListaGenerica()
         current_node_lc = self.primero
         for _ in range(self.size):
             if current_node_lc is None:
                 print("DEBUG: Error en faro_shuffle: Mazo inesperadamente corto al copiar a temp_original_deck_lg.")
                 return
-            temp_original_deck_lg.agregar_final(current_node_lc.carta) # Agrega el objeto Carta
+            temp_original_deck_lg.agregar_final(current_node_lc.carta)
             current_node_lc = current_node_lc.siguiente
 
-        self.clear() # Limpiar el mazo principal para reconstruirlo
+        self.clear()  # Limpiar el mazo principal para reconstruirlo
 
         # Preparar las listas para los subgrupos usando ListaGenerica
-        impares_A = ListaGenerica() 
-        pares_A = ListaGenerica()   
-        impares_B = ListaGenerica() 
-        pares_B = ListaGenerica()   
+        impares_A = ListaGenerica()
+        pares_A = ListaGenerica()
+        impares_B = ListaGenerica()
+        pares_B = ListaGenerica()
         pivote_card: Union[Carta, None] = None
 
-        #Separar en subgrupos
-        for current_idx_lg in range(temp_original_deck_lg.size): # Iterar por los indices
-            posicion = current_idx_lg + 1 # Convertir a posicion 1
+        # Separar en subgrupos
+        for current_idx_lg in range(temp_original_deck_lg.size):
+            posicion = current_idx_lg + 1
             carta_a_procesar = temp_original_deck_lg.obtener_por_indice(current_idx_lg)
             if carta_a_procesar is None:
                 print(f"DEBUG: Error: Carta en indice {current_idx_lg} es None durante la separacion de Faro Shuffle.")
                 return
 
-            if posicion >= 1 and posicion <= 25: # Mitad A (original_index 0-24)
-                if posicion % 2 == 1: # Posiciones impares de Mitad A
+            if 1 <= posicion <= 25:
+                if posicion % 2 == 1:
                     impares_A.agregar_final(carta_a_procesar)
-                else: # Posiciones pares de Mitad A
+                else:
                     pares_A.agregar_final(carta_a_procesar)
-            elif posicion == 26: # Pivote 
+            elif posicion == 26:
                 pivote_card = carta_a_procesar
-            elif posicion >= 27 and posicion <= 51: # Mitad B 
-                if posicion % 2 == 1: # Posiciones impares de Mitad B 
+            elif 27 <= posicion <= 51:
+                if posicion % 2 == 1:
                     impares_B.agregar_final(carta_a_procesar)
-                else: # Posiciones pares de Mitad B 
+                else:
                     pares_B.agregar_final(carta_a_procesar)
-        
-        
-        new_ordered_cards_list = [] 
+
+        # Nueva lista enlazada ordenada
+        new_ordered_cards_lg = ListaGenerica()
 
         # Intercalado de impares_A y pares_B
         idx_imparesA = 0
         idx_paresB = 0
         while idx_imparesA < impares_A.size and idx_paresB < pares_B.size:
-            new_ordered_cards_list.append(impares_A.obtener_por_indice(idx_imparesA))
-            new_ordered_cards_list.append(pares_B.obtener_por_indice(idx_paresB))
+            new_ordered_cards_lg.agregar_final(impares_A.obtener_por_indice(idx_imparesA))
+            new_ordered_cards_lg.agregar_final(pares_B.obtener_por_indice(idx_paresB))
             idx_imparesA += 1
             idx_paresB += 1
-        
-        # Añadir la carta restante de impares_A 
-        if idx_imparesA < impares_A.size:
-            new_ordered_cards_list.append(impares_A.obtener_por_indice(idx_imparesA))
 
-        # Añadir el pivote
+        if idx_imparesA < impares_A.size:
+            new_ordered_cards_lg.agregar_final(impares_A.obtener_por_indice(idx_imparesA))
+
         if pivote_card:
-            new_ordered_cards_list.append(pivote_card)
+            new_ordered_cards_lg.agregar_final(pivote_card)
         else:
             print("DEBUG: Advertencia: Pivote no encontrado para Faro Shuffle. Esto no deberia ocurrir con un mazo de 51 cartas.")
 
@@ -264,20 +413,21 @@ class ListaCartas:
         idx_imparesB = 0
         idx_paresA = 0
         while idx_imparesB < impares_B.size and idx_paresA < pares_A.size:
-            new_ordered_cards_list.append(impares_B.obtener_por_indice(idx_imparesB))
-            new_ordered_cards_list.append(pares_A.obtener_por_indice(idx_paresA))
+            new_ordered_cards_lg.agregar_final(impares_B.obtener_por_indice(idx_imparesB))
+            new_ordered_cards_lg.agregar_final(pares_A.obtener_por_indice(idx_paresA))
             idx_imparesB += 1
             idx_paresA += 1
 
-        # Añadir la carta restante de impares_B 
         if idx_imparesB < impares_B.size:
-            new_ordered_cards_list.append(impares_B.obtener_por_indice(idx_imparesB))
-        
-        #Insertar todas las cartas 
-        for card in new_ordered_cards_list:
-            self.insertar(card) # Reconstruye la ListaCartas circular
+            new_ordered_cards_lg.agregar_final(impares_B.obtener_por_indice(idx_imparesB))
+
+        # Insertar cartas en el mazo original
+        for i in range(new_ordered_cards_lg.size):
+            carta = new_ordered_cards_lg.obtener_por_indice(i)
+            self.insertar(carta)
 
         print(f"DEBUG: Mazo despues de FARO_SHUFFLE (size: {self.size}): {self.get_display_string()}")
+
 
 
     def _insertar_nodo_existente(self, nodo_existente: NodoCarta):
@@ -399,6 +549,31 @@ class ListaGenerica:
                 return True
             current = current.siguiente
         return False
+    
+    
+    def obtener_como_lista(self) -> list:
+        resultado = []
+        actual = self.primero
+        while actual:
+            resultado.append(actual.data)
+            actual = actual.siguiente
+        return resultado
+
+
+    
+    def agregar(self, data):
+        self.agregar_final(data)
+        
+    def __len__(self):
+        actual = self.primero  
+        count = 0
+        while actual:
+            count += 1
+            actual = actual.siguiente
+        return count
+
+
+
 
 # Pila de Cartas (NodoPila y PilaCartas)
 class NodoPila:
@@ -475,37 +650,38 @@ class Jugador:
         print(f"DEBUG: {self.nombre} intentando jugar una carta compatible con {carta_en_mesa}.")
         print(f"DEBUG: Mano antes de buscar: {self.mano.get_display_string()}")
 
-        temp_hand_list = []
+        temp_hand_list = ListaLinealCartas()
+
+        # Sacar todas las cartas de la pila y guardarlas en una lista enlazada temporal
         while not self.mano.esta_vacia():
             card = self.mano.desapilar()
             if card:
-                temp_hand_list.append(card)
+                temp_hand_list.agregar_final(card)
 
-        card_to_play_index = -1 
-
-        # Revisar a traves de cada carta en la mano del jugador
-        for i, card_in_hand in enumerate(temp_hand_list):
-            # Primero comparar numero y luego comparar color
-            if card_in_hand.numero == carta_en_mesa.numero or \
-                card_in_hand.color == carta_en_mesa.color:
-                card_to_play_index = i
-                break # Se encontro una carta compatible
+        # Buscar una carta compatible
+        card_to_play_index = -1
+        for idx in range(temp_hand_list.size):
+            card_in_hand = temp_hand_list.obtener_por_indice(idx)
+            if card_in_hand.numero == carta_en_mesa.numero or card_in_hand.color == carta_en_mesa.color:
+                card_to_play_index = idx
+                break
 
         best_match_card = None
         if card_to_play_index != -1:
-            best_match_card = temp_hand_list.pop(card_to_play_index)
-            print(f"DEBUG: Se encontro y jugo carta compatible: {best_match_card}.")
+            best_match_card = temp_hand_list.eliminar_en_posicion(card_to_play_index)
+            print(f"DEBUG: Se encontró y jugó carta compatible: {best_match_card}.")
         else:
-            print("DEBUG: No se encontro carta compatible por numero o color en la mano.")
+            print("DEBUG: No se encontró carta compatible por número o color en la mano.")
 
-        # Reconstruir la mano con las cartas restantes
-        self.mano.clear() 
-        # Apilar las cartas de nuevo
-        for card in reversed(temp_hand_list):
+        # Reconstruir la mano (apilar en orden inverso)
+        self.mano.clear()
+        for idx in reversed(range(temp_hand_list.size)):
+            card = temp_hand_list.obtener_por_indice(idx)
             self.mano.apilar(card)
 
-        print(f"DEBUG: Mano despues de jugar/buscar: {self.mano.get_display_string()}")
+        print(f"DEBUG: Mano después de jugar/buscar: {self.mano.get_display_string()}")
         return best_match_card
+
 
     def _can_play_card(self, carta_en_mesa: Carta) -> bool:
         actual = self.mano.cima 
