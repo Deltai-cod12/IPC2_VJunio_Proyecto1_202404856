@@ -1,9 +1,11 @@
-# Controlador/partida_controlador.py
-
 import xml.etree.ElementTree as ET
 from Utilidades.game_loader import GameLoader
-from Modelo.partida import Partida, ListaGenerica, PartidaConfigData, ShuffleInfo, Jugador, Carta
-from typing import Union, Callable # Importa Callable para type hinting
+from Utilidades.game_saver import save_game_log_to_xml
+from Utilidades.graph_generator import generate_game_graph 
+from Modelo.partida import Partida, ListaGenerica, PartidaConfigData, ShuffleInfo, Jugador, Carta, PilaCartasMesa
+from typing import Union, Callable
+from datetime import datetime
+
 
 class PartidaController:
     def __init__(self, view):
@@ -12,28 +14,17 @@ class PartidaController:
         self.game_template_partida: Union[Partida, None] = None
         self.current_partida: Union[Partida, None] = None
         self.game_running = False
-        self._game_step_counter = 0 # Inicializar el contador de pasos del juego
+        self.game_log_history: list[str] = []
+        self.pila_historial_mesa: PilaCartasMesa = PilaCartasMesa()
 
     def _log_game_action(self, message: str):
-        """
-        Función interna que envuelve el log_message de la vista
-        para añadir el contador de pasos si es un mensaje de acción de turno.
-        """
-        # Los mensajes de setup o shuffles (que inician con '>') no necesitan el contador de paso.
-        # Los mensajes de la primera carta en mesa tampoco.
-        if message.startswith('>') or message.startswith('La carta inicial es'):
-            self.view.log_message(message)
-        else:
-            # Para los mensajes de acción de turno, se añade el prefijo "Paso X:"
-            self.view.log_message(f"Paso {self._game_step_counter}: {message}")
-
+        # Guardo los pasos del juego para el XML y los muestro en la vista.
+        self.game_log_history.append(message)
+        self.view.log_message(f"Paso {len(self.game_log_history)}: {message}")
 
     def load_game_configurations(self, filepath: str):
-        """
-        Carga las configuraciones del juego desde un archivo XML y las prepara.
-        Habilita la selección de partida en la vista si la carga es exitosa.
-        """
-        self.view.log_message(f"Cargando configuraciones del juego desde: {filepath}")
+        # Cargar la configuracion del juego desde el XML y actualizar la UI.
+        self.view.log_message(f"Cargando configuraciones desde: {filepath}")
         self.game_template_partida = self.game_loader.load_from_xml(filepath, self.view.log_message)
         
         if self.game_template_partida:
@@ -45,22 +36,17 @@ class PartidaController:
                 current_partida_config_node = current_partida_config_node.siguiente
             
             self.view.display_available_partidas(available_partida_names_native_list)
-            self.view.log_message("Configuraciones del juego cargadas exitosamente. Seleccione una partida para iniciar.")
-            print("DEBUG: Configuraciones del juego cargadas exitosamente.")
+            self.view.log_message("Configuraciones cargadas exitosamente. Seleccione una partida.")
             self.view.enable_game_selection()
             self.view.clear_game_over_message()
         else:
-            self.view.log_message("Fallo al cargar las configuraciones del juego.")
-            print("DEBUG: Fallo al cargar las configuraciones del juego.")
+            self.view.log_message("Fallo al cargar las configuraciones.")
             self.view.disable_game_controls()
 
     def select_partida(self, partida_name: str):
-        """
-        Selecciona una partida específica por su nombre de las configuraciones cargadas
-        y la inicializa para empezar a jugar.
-        """
+        # Seleccionar una partida y prepararla para jugar.
         if not self.game_template_partida:
-            self.view.log_message("Error: No hay configuraciones de juego cargadas. Cargue un XML primero.")
+            self.view.log_message("Error: No hay configuraciones cargadas.")
             self.view.disable_game_controls()
             return
 
@@ -82,37 +68,26 @@ class PartidaController:
                 self.game_template_partida.get_player_names_template() 
             )
             self.view.log_message(f"Partida seleccionada: '{partida_name}'")
-            print(f"DEBUG: Partida seleccionada: '{partida_name}'")
-            
+            self.game_log_history.clear() 
             self.start_game()
             self.game_running = True
             self.view.enable_play_button()
             self.view.clear_game_over_message()
-            # Inicializar el contador de pasos de juego para la nueva partida
-            self._game_step_counter = 1 
         else:
-            self.view.log_message(f"Error: Partida '{partida_name}' no encontrada en las configuraciones.")
-            print(f"DEBUG: Error: Partida '{partida_name}' no encontrada.")
+            self.view.log_message(f"Error: Partida '{partida_name}' no encontrada.")
             self.view.disable_play_button()
 
     def start_game(self):
-        """
-        Inicia la partida actual: aplica los shuffles, reparte las cartas iniciales
-        y actualiza el display inicial del juego.
-        """
+        # Iniciar la partida: aplicar shuffles, repartir cartas e inicializar el display.
         if not self.current_partida:
-            self.view.log_message("Error: No hay partida seleccionada o inicializada para iniciar.")
+            self.view.log_message("Error: No hay partida seleccionada para iniciar.")
             self.view.disable_game_controls()
             return
 
-        self.view.log_message("\n--- Iniciando Simulación de Partida ---")
-        self.view.log_message("Aplicando shuffles al mazo...")
-        # Pasa _log_game_action para los mensajes de shuffle (sin contador de paso)
-        self.current_partida.apply_shuffles(self._log_game_action) 
-        self.view.log_message("Shuffles aplicados.")
-
-        self.view.log_message("Repartiendo cartas iniciales...")
-        # Pasa _log_game_action para los mensajes de reparto (incluyendo el Paso 1)
+        self.view.log_message("\n--- Iniciando Simulacion de Partida ---")
+        self.view.log_message("Aplicando shuffles...")
+        self.current_partida.apply_shuffles(lambda msg: self.view.log_message(msg)) 
+        self.view.log_message("Reparto inicial de cartas...")
         self.current_partida.deal_initial_cards(self._log_game_action) 
         self.view.log_message("Reparto inicial completado.")
         
@@ -121,59 +96,54 @@ class PartidaController:
         current_player_obj: Union[Jugador, None] = self.current_partida.jugadores.obtener_por_indice(self.current_partida.current_player_index)
         if current_player_obj:
             self.view.log_message(f"Partida lista. Turno de: {current_player_obj.nombre}")
-            print(f"DEBUG: Partida lista. Turno de: {current_player_obj.nombre}")
         else:
-            self.view.log_message("Error: No se pudo determinar el primer jugador del turno.")
-            print("DEBUG: Error: No se pudo determinar el primer jugador del turno.")
-        
-        # Después de que la carta inicial (Paso 1) ha sido colocada,
-        # el próximo turno real de juego es el Paso 2.
-        self._game_step_counter = 2 
+            self.view.log_message("Error: No se pudo determinar el primer jugador.")
 
     def play_turn(self):
-        """
-        Maneja la lógica para un solo turno de juego, incluyendo la verificación de fin de partida.
-        """
+        # Ejecutar un turno de juego y verificar si la partida termina.
         if not self.game_running or not self.current_partida:
-            self.view.log_message("El juego no está activo o no se ha cargado/seleccionado correctamente.")
+            self.view.log_message("El juego no esta activo.")
             return
 
-        # Ejecutar el turno del modelo, pasando _log_game_action como callback
+        # El modelo de la partida manejara la logica del turno y usara _log_game_action para los logs del XML.
         game_continues = self.current_partida.play_turn(self._log_game_action)
         self.update_game_display() 
 
         if not game_continues:
             self.game_running = False 
             
-            final_message = ""
-            winner_found = False
+            final_message_ui = ""
+            final_message_xml = ""
+            winner_info = "Empate" 
+            
             if self.current_partida.jugadores.size > 0:
                 current_player_node = self.current_partida.jugadores.primero
                 while current_player_node:
                     player: Jugador = current_player_node.data
                     if player.mano.esta_vacia():
-                        final_message = f"¡{player.nombre} ha ganado la partida!"
-                        winner_found = True
+                        winner_info = player.nombre
+                        final_message_ui = f"¡{player.nombre} ha ganado la partida!"
+                        final_message_xml = f"El jugador {player.nombre} ha ganado"
                         break 
                     current_player_node = current_player_node.siguiente
             
-            if not winner_found:
-                final_message = "La partida termina en empate (mazo vacío y sin movimientos)."
-            
-            self.view.on_game_end(final_message) 
-            self.view.log_message("\n--- ¡Fin de la Simulación de Partida! ---")
-            self.view.log_message(final_message)
+            if not winner_info or winner_info == "Empate":
+                final_message_ui = "La partida termina en empate."
+                final_message_xml = "La partida termina en empate." 
+                winner_info = "Empate"
 
-        else:
-            # Si el juego continúa, incrementar el contador de pasos para el siguiente turno
-            self._game_step_counter += 1
-            # El log del "Siguiente turno para" ya está gestionado por el modelo o la actualización de UI
-            # No se necesita un log adicional aquí como "Avanzando al siguiente turno..."
+            # El mensaje final se añade al historial XML.
+            self._log_game_action(final_message_xml) 
+            # Mostrar el mensaje final en la interfaz de usuario.
+            self.view.on_game_end(final_message_ui) 
+            self.view.log_message("\n--- ¡Fin de la Simulacion de Partida! ---")
+            # Generar el archivo XML de la partida.
+            save_game_log_to_xml(winner_info, self.game_log_history, output_dir="Utilidades") 
+            # Limpiar el historial de pasos para la proxima partida.
+            self.game_log_history.clear() 
 
     def update_game_display(self):
-        """
-        Actualiza la vista con el estado actual del juego.
-        """
+        # Actualizar la vista con el estado actual del juego.
         if self.current_partida:
             current_player_name = "N/A"
             current_player_obj: Union[Jugador, None] = self.current_partida.jugadores.obtener_por_indice(self.current_partida.current_player_index)
@@ -182,7 +152,6 @@ class PartidaController:
             
             card_on_table: Union[Carta, None] = self.current_partida.get_card_on_table_for_display()
             card_on_table_str = str(card_on_table) if card_on_table else "N/A"
-
             mazo_reserva_info = self.current_partida.get_mazo_display_string()
 
             self.view.update_game_state_display(
@@ -201,3 +170,24 @@ class PartidaController:
                 else:
                     break
             self.view.update_players_hands_display(players_hands_display_list)
+
+    def generate_game_graph_report(self):
+        if not self.current_partida:
+            self.view.log_message("Error: No hay partida activa para generar el grafico.")
+            return
+
+        self.view.log_message("Generando grafico del estado actual del juego...")
+
+        historial_cartas_mesa = self.current_partida.pila_historial_mesa  # ✅ Aquí está la corrección
+        mazo_reserva = self.current_partida.mazo_reserva
+        jugadores_list_generica = self.current_partida.jugadores
+
+        try:
+            generate_game_graph(
+                historial_cartas_mesa=historial_cartas_mesa,
+                mazo_reserva=mazo_reserva,
+                jugadores=jugadores_list_generica
+            )
+            self.view.log_message("Grafico generado exitosamente en la carpeta 'Reportes'.")
+        except Exception as e:
+            self.view.log_message(f"Error al generar el grafico: {e}. Asegurese de que Graphviz este instalado y en su PATH.")

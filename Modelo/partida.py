@@ -1,7 +1,5 @@
-# Modelo/partida.py
 from typing import Union
 
-# Clase para representar una Carta
 class Carta:
     def __init__(self, color: str, numero: int):
         self.color = color
@@ -10,55 +8,90 @@ class Carta:
     def __str__(self):
         return f"{self.numero} ({self.color})"
 
-    def __repr__(self): # Para una representación más útil en depuración
+    def __repr__(self): 
         return f"Carta(color='{self.color}', numero={self.numero})"
 
-    def __eq__(self, other): # Para comparar cartas, útil en el TDA
+    def __eq__(self, other): # Para comparar cartas
         if not isinstance(other, Carta):
             return NotImplemented
         return self.color == other.color and self.numero == other.numero
+    
+class NodoPilaCartasMesa:
+    """Nodo simple para la pila de cartas en mesa (historial)"""
+    def __init__(self, carta: Carta):
+        self.carta = carta
+        self.siguiente = None
 
-# --- Inicio de Estructuras de Datos Personalizadas ---
+class PilaCartasMesa:
+    """Pila independiente que guarda el historial de cartas en mesa"""
+    def __init__(self):
+        self.cima = None  # Nodo en la cima de la pila
+        self.size = 0
+    
+    def apilar(self, carta: Carta):
+        """Guarda una nueva carta en la pila (sin afectar el juego)"""
+        nuevo_nodo = NodoPilaCartasMesa(carta)
+        nuevo_nodo.siguiente = self.cima
+        self.cima = nuevo_nodo
+        self.size += 1
+    
+    def ver_cima(self) -> Union[Carta, None]:
+        """Devuelve la carta en la cima sin modificarla"""
+        return self.cima.carta if self.cima else None
+    
+    def esta_vacia(self) -> bool:
+        return self.cima is None
+    
+    def get_display_string(self) -> str:
+        """Para debug: muestra la pila como cadena (útil en logs)"""
+        if self.esta_vacia():
+            return "Pila vacía"
+        
+        actual = self.cima
+        cartas_str = []
+        while actual:
+            cartas_str.append(str(actual.carta))
+            actual = actual.siguiente
+        return " -> ".join(cartas_str)
 
-# Nodo para la Lista Circular Simplemente Enlazada (Mazo)
+# Nodo para la Lista Circular Simplemente Enlazada para el mazo
 class NodoCarta:
     def __init__(self, carta: Carta):
         self.carta = carta
         self.siguiente = None # Puntero al siguiente nodo
 
-# Implementación de la Lista Circular Simplemente Enlazada (ListaCartas)
 # Usada para el mazo de reserva
 class ListaCartas:
     def __init__(self):
         self.primero = None # Primer nodo de la lista
-        self.ultimo = None  # Último nodo de la lista (para inserciones O(1) al final)
+        self.ultimo = None  # ultimo nodo de la lista 
         self.size = 0       # Contador de elementos
 
     def insertar(self, carta: Carta):
         nuevo_nodo = NodoCarta(carta)
-        if not self.primero: # Si la lista está vacía
+        if not self.primero: # Si la lista esta vacia
             self.primero = nuevo_nodo
             self.ultimo = nuevo_nodo
-            self.ultimo.siguiente = self.primero # El último apunta a sí mismo (circular)
+            self.ultimo.siguiente = self.primero # El ultimo apunta a si mismo (circular)
         else: # Si la lista ya tiene elementos
-            self.ultimo.siguiente = nuevo_nodo    # El último actual apunta al nuevo
+            self.ultimo.siguiente = nuevo_nodo    # El ultimo actual apunta al nuevo
             nuevo_nodo.siguiente = self.primero   # El nuevo apunta al primero (circular)
-            self.ultimo = nuevo_nodo              # El nuevo nodo es el último
+            self.ultimo = nuevo_nodo              # El nuevo nodo es el ultimo
         self.size += 1
 
     def get_display_string(self) -> str:
         if not self.primero:
-            return "Mazo vacío."
+            return "Mazo vacio."
 
         actual = self.primero
         cards_str_parts = ""
         nodes_displayed_count = 0
 
-        max_iterations = self.size * 2 + 5 # Un margen de seguridad para bucles infinitos
+        max_iterations = self.size * 2 + 5 
 
         for _ in range(max_iterations):
             if actual is None:
-                print("DEBUG_DISPLAY: get_display_string encontró None. Lista rota.")
+                print("DEBUG_DISPLAY: get_display_string encontro None. Lista rota.")
                 break
 
             if nodes_displayed_count == self.size and actual == self.primero:
@@ -76,23 +109,16 @@ class ListaCartas:
                 break
 
         if nodes_displayed_count != self.size and self.size > 0:
-            print(f"DEBUG_DISPLAY: Advertencia: get_display_string mostró {nodes_displayed_count} nodos, se esperaban {self.size}.")
+            print(f"DEBUG_DISPLAY: Advertencia: get_display_string mostro {nodes_displayed_count} nodos, se esperaban {self.size}.")
 
         return cards_str_parts
 
     def clear(self):
-        """
-        Vacía la lista de cartas.
-        """
         self.primero = None
         self.ultimo = None
         self.size = 0
 
     def shuffle_right(self, movimientos: int):
-        """
-        Mueve las últimas 'movimientos' cartas al principio de la lista, manteniendo su orden relativo.
-        Simula un "shift" hacia la derecha.
-        """
         if self.primero is None or self.size <= 1 or movimientos == 0:
             return
 
@@ -117,17 +143,13 @@ class ListaCartas:
         self.ultimo = new_last_candidate
         self.ultimo.siguiente = self.primero
 
-        print(f"DEBUG: Mazo después de RIGHT_SHUFFLE (size: {self.size}): {self.get_display_string()}")
+        print(f"DEBUG: Mazo despues de RIGHT_SHUFFLE (size: {self.size}): {self.get_display_string()}")
 
 
     def half_shuffle(self):
-        """
-        Implementa el shuffle "medio" para lista circular simplemente enlazada.
-        Divide el mazo de 51 cartas en 25 (seg1), 1 (pivote), 25 (seg2).
-        Nuevo orden: Segmento 2 -> Pivote -> Segmento 1 (circular)
-        """
+
         if self.size != 51:
-            print(f"DEBUG: Half Shuffle solo aplica a mazos de 51 cartas. Tamaño actual: {self.size}. No se aplicó.")
+            print(f"DEBUG: Half Shuffle solo aplica a mazos de 51 cartas. Tamaño actual: {self.size}. No se aplico.")
             return
 
         print("DEBUG: Iniciando HALF_SHUFFLE (lista simplemente enlazada)...")
@@ -139,51 +161,44 @@ class ListaCartas:
                 return
             seg1_fin = seg1_fin.siguiente
 
-        if seg1_fin is None: # Seguridad
+        if seg1_fin is None: 
             print("DEBUG: Error en half_shuffle: seg1_fin es None.")
             return
 
-        pivote_node = seg1_fin.siguiente # Nodo en la posición 25 (el 26º elemento)
+        pivote_node = seg1_fin.siguiente # Pivote en la posicion 25
         if pivote_node is None:
             print("DEBUG: Error en half_shuffle: pivote_node es None.")
             return
 
-        seg2_inicio = pivote_node.siguiente # Nodo en la posición 26 (el 27º elemento)
+        seg2_inicio = pivote_node.siguiente # Nodo en la posicion 26 
         if seg2_inicio is None:
             print("DEBUG: Error en half_shuffle: seg2_inicio es None.")
             return
 
-        seg2_fin = self.ultimo # El último nodo de la lista es el final del segmento 2
+        seg2_fin = self.ultimo 
 
-        seg1_fin.siguiente = None # Romper enlace entre seg1 y pivote
-        pivote_node.siguiente = None # Romper enlace entre pivote y seg2
+        seg1_fin.siguiente = None # quitamos los apuntadores
+        pivote_node.siguiente = None 
 
         seg2_fin.siguiente = pivote_node
-        pivote_node.siguiente = self.primero # self.primero es seg1_inicio
+        pivote_node.siguiente = self.primero 
 
         self.primero = seg2_inicio
         self.ultimo = seg1_fin
         self.ultimo.siguiente = self.primero
 
-        print(f"DEBUG: Mazo después de HALF_SHUFFLE (size: {self.size}): {self.get_display_string()}")
+        print(f"DEBUG: Mazo despues de HALF_SHUFFLE (size: {self.size}): {self.get_display_string()}")
 
 
     def faro_shuffle(self):
-        """
-        Implementación exacta del Faro Shuffle que reproduce el ordenamiento específico mostrado en el XML
-        y en el ejemplo de 13 cartas proporcionado por el usuario.
-        - Divide el mazo en 25 (mitad A) + 1 (pivote) + 25 (mitad B) cartas.
-        - Subdivide cada mitad en 'impares' (posiciones 1-indexadas, que son índices pares 0-indexados)
-        y 'pares' (posiciones 1-indexadas, que son índices impares 0-indexados) dentro de cada mitad.
-        - Intercala en el orden: impares_A, pares_B, luego pivote, luego impares_B, pares_A.
-        """
+        
         if self.size != 51:
             print(f"DEBUG: Faro Shuffle requiere 51 cartas. Tamaño actual: {self.size}.")
             return
 
-        print("DEBUG: Iniciando FARO_SHUFFLE (implementación exacta de la lógica de usuario)...")
+        print("DEBUG: Iniciando FARO_SHUFFLE (implementacion exacta de la logica de usuario)...")
 
-        # Paso 1: Extraer todas las cartas del mazo actual a una ListaGenerica para fácil acceso por índice.
+        #Extraer todas las cartas del mazo actual a una ListaGenerica 
         temp_original_deck_lg = ListaGenerica()
         current_node_lc = self.primero
         for _ in range(self.size):
@@ -202,29 +217,29 @@ class ListaCartas:
         pares_B = ListaGenerica()   
         pivote_card: Union[Carta, None] = None
 
-        # Paso 2: Separar en subgrupos según la lógica de posición 1-basada del usuario
-        for current_idx_lg in range(temp_original_deck_lg.size): # Iterar por los índices 0-basados de temp_original_deck_lg
-            posicion = current_idx_lg + 1 # Convertir a posición 1-basada para la lógica del usuario
+        #Separar en subgrupos
+        for current_idx_lg in range(temp_original_deck_lg.size): # Iterar por los indices
+            posicion = current_idx_lg + 1 # Convertir a posicion 1
             carta_a_procesar = temp_original_deck_lg.obtener_por_indice(current_idx_lg)
             if carta_a_procesar is None:
-                print(f"DEBUG: Error: Carta en índice {current_idx_lg} es None durante la separación de Faro Shuffle.")
+                print(f"DEBUG: Error: Carta en indice {current_idx_lg} es None durante la separacion de Faro Shuffle.")
                 return
 
             if posicion >= 1 and posicion <= 25: # Mitad A (original_index 0-24)
-                if posicion % 2 == 1: # Posiciones impares de Mitad A (1, 3, ..., 25)
+                if posicion % 2 == 1: # Posiciones impares de Mitad A
                     impares_A.agregar_final(carta_a_procesar)
-                else: # Posiciones pares de Mitad A (2, 4, ..., 24)
+                else: # Posiciones pares de Mitad A
                     pares_A.agregar_final(carta_a_procesar)
-            elif posicion == 26: # Pivote (original_index 25)
+            elif posicion == 26: # Pivote 
                 pivote_card = carta_a_procesar
-            elif posicion >= 27 and posicion <= 51: # Mitad B (original_index 26-50)
-                if posicion % 2 == 1: # Posiciones impares de Mitad B (27, 29, ..., 51)
+            elif posicion >= 27 and posicion <= 51: # Mitad B 
+                if posicion % 2 == 1: # Posiciones impares de Mitad B 
                     impares_B.agregar_final(carta_a_procesar)
-                else: # Posiciones pares de Mitad B (28, 30, ..., 50)
+                else: # Posiciones pares de Mitad B 
                     pares_B.agregar_final(carta_a_procesar)
         
-        # Paso 3: Construir el nuevo mazo intercalando en una lista de Python
-        new_ordered_cards_list = [] # Usamos una lista de Python para construir el orden final
+        
+        new_ordered_cards_list = [] 
 
         # Intercalado de impares_A y pares_B
         idx_imparesA = 0
@@ -235,7 +250,7 @@ class ListaCartas:
             idx_imparesA += 1
             idx_paresB += 1
         
-        # Añadir la carta restante de impares_A (si la hay, que debería ser 1)
+        # Añadir la carta restante de impares_A 
         if idx_imparesA < impares_A.size:
             new_ordered_cards_list.append(impares_A.obtener_por_indice(idx_imparesA))
 
@@ -243,7 +258,7 @@ class ListaCartas:
         if pivote_card:
             new_ordered_cards_list.append(pivote_card)
         else:
-            print("DEBUG: Advertencia: Pivote no encontrado para Faro Shuffle. Esto no debería ocurrir con un mazo de 51 cartas.")
+            print("DEBUG: Advertencia: Pivote no encontrado para Faro Shuffle. Esto no deberia ocurrir con un mazo de 51 cartas.")
 
         # Intercalado de impares_B y pares_A
         idx_imparesB = 0
@@ -254,31 +269,28 @@ class ListaCartas:
             idx_imparesB += 1
             idx_paresA += 1
 
-        # Añadir la carta restante de impares_B (si la hay, que debería ser 1)
+        # Añadir la carta restante de impares_B 
         if idx_imparesB < impares_B.size:
             new_ordered_cards_list.append(impares_B.obtener_por_indice(idx_imparesB))
         
-        # Paso 4: Insertar todas las cartas recopiladas en la lista enlazada circular self.mazo_reserva
+        #Insertar todas las cartas 
         for card in new_ordered_cards_list:
             self.insertar(card) # Reconstruye la ListaCartas circular
 
-        print(f"DEBUG: Mazo después de FARO_SHUFFLE (size: {self.size}): {self.get_display_string()}")
+        print(f"DEBUG: Mazo despues de FARO_SHUFFLE (size: {self.size}): {self.get_display_string()}")
 
 
     def _insertar_nodo_existente(self, nodo_existente: NodoCarta):
-        """
-        Método auxiliar para insertar un NodoCarta que YA EXISTE en la lista simplemente enlazada.
-        Es crucial reiniciar sus punteros internos antes de enlazarlo.
-        """
+        
         nodo_existente.siguiente = None # Limpiar punteros para evitar referencias cruzadas/incorrectas
         
         if not self.primero:
             self.primero = nodo_existente
             self.ultimo = nodo_existente
-            self.ultimo.siguiente = self.primero # Circular
+            self.ultimo.siguiente = self.primero 
         else:
             self.ultimo.siguiente = nodo_existente
-            nodo_existente.siguiente = self.primero # Circular
+            nodo_existente.siguiente = self.primero 
             self.ultimo = nodo_existente
         self.size += 1
 
@@ -296,7 +308,7 @@ class ListaCartas:
             while current.siguiente != self.ultimo:
                 current = current.siguiente
                 if current is None: 
-                    print("DEBUG: ERROR CRÍTICO: pop_from_tail encontró None durante la búsqueda del penúltimo nodo.")
+                    print("DEBUG: ERROR CRiTICO: pop_from_tail encontro None durante la busqueda del penultimo nodo.")
                     return None
             
             new_last = current 
@@ -324,16 +336,12 @@ class ListaCartas:
         print(f"DEBUG: Pop de cabeza: {carta_extraida}. Nuevo tamaño: {self.size}. Mazo: {self.get_display_string()}")
         return carta_extraida
 
-# Custom Generic Node - Reemplazo de nodos para listas nativas de Python (ej. para jugadores, nombres, shuffles)
-# Se mantiene doblemente enlazado para ListaGenerica, ya que la restricción es para ListaCartas.
 class NodoGenerico:
     def __init__(self, data):
         self.data = data
         self.siguiente = None
         self.anterior = None 
 
-# Custom Generic Doubly Linked List - Reemplazo de listas nativas de Python
-# Se mantiene doblemente enlazada para ListaGenerica.
 class ListaGenerica:
     def __init__(self):
         self.primero = None
@@ -364,7 +372,7 @@ class ListaGenerica:
 
     def get_display_string(self) -> str:
         if self.size == 0:
-            return "Lista vacía."
+            return "Lista vacia."
         
         current = self.primero
         items_str = ""
@@ -392,7 +400,7 @@ class ListaGenerica:
             current = current.siguiente
         return False
 
-# Pila de Cartas (NodoPila y PilaCartas ya son estructuras customizadas, es una pila simplemente enlazada)
+# Pila de Cartas (NodoPila y PilaCartas)
 class NodoPila:
     def __init__(self, carta: Carta):
         self.carta = carta
@@ -427,7 +435,7 @@ class PilaCartas:
     
     def get_display_string(self) -> str:
         if self.esta_vacia():
-            return "Pila vacía."
+            return "Pila vacia."
         
         actual = self.cima
         cards_str_parts = ""
@@ -442,7 +450,7 @@ class PilaCartas:
 
     def clear(self): 
         """
-        Vacía la pila de cartas.
+        Vacia la pila de cartas.
         """
         self.cima = None
         self.size = 0
@@ -450,7 +458,7 @@ class PilaCartas:
 class Jugador:
     def __init__(self, nombre: str):
         if not isinstance(nombre, str):
-            print(f"DEBUG: ADVERTENCIA CRÍTICA - Jugador recibió un nombre no-string: {nombre}, tipo: {type(nombre)}. Forzando a string.")
+            print(f"DEBUG: ADVERTENCIA CRiTICA - Jugador recibio un nombre no-string: {nombre}, tipo: {type(nombre)}. Forzando a string.")
             self.nombre = str(nombre) 
         else:
             self.nombre = nombre
@@ -464,15 +472,10 @@ class Jugador:
         self.mano.apilar(carta)
 
     def jugar_carta_de_mano(self, carta_en_mesa: Carta) -> Union[Carta, None]:
-        """
-        Intenta jugar la primera carta de la mano del jugador que coincida
-        en número O en color con la carta en la mesa.
-        Retorna la carta jugada o None si no hay compatible.
-        """
         print(f"DEBUG: {self.nombre} intentando jugar una carta compatible con {carta_en_mesa}.")
         print(f"DEBUG: Mano antes de buscar: {self.mano.get_display_string()}")
 
-        temp_hand_list = [] # Usamos una lista de Python para facilitar la búsqueda y eliminación
+        temp_hand_list = []
         while not self.mano.esta_vacia():
             card = self.mano.desapilar()
             if card:
@@ -480,36 +483,31 @@ class Jugador:
 
         card_to_play_index = -1 
 
-        # Itera a través de cada carta en la mano para encontrar la primera que cumpla la condición.
+        # Revisar a traves de cada carta en la mano del jugador
         for i, card_in_hand in enumerate(temp_hand_list):
-            # Condición: ¿La carta coincide en número O en color?
+            # Primero comparar numero y luego comparar color
             if card_in_hand.numero == carta_en_mesa.numero or \
                 card_in_hand.color == carta_en_mesa.color:
                 card_to_play_index = i
-                break # Se encontró una carta compatible, se elige esta y se detiene la búsqueda.
+                break # Se encontro una carta compatible
 
         best_match_card = None
         if card_to_play_index != -1:
             best_match_card = temp_hand_list.pop(card_to_play_index)
-            print(f"DEBUG: Se encontró y jugó carta compatible: {best_match_card}.")
+            print(f"DEBUG: Se encontro y jugo carta compatible: {best_match_card}.")
         else:
-            print("DEBUG: No se encontró carta compatible por número o color en la mano.")
+            print("DEBUG: No se encontro carta compatible por numero o color en la mano.")
 
-        # Reconstruir la mano (pila) con las cartas restantes
+        # Reconstruir la mano con las cartas restantes
         self.mano.clear() 
-        # Apilar las cartas de nuevo en orden inverso para mantener el orden relativo original en la pila
+        # Apilar las cartas de nuevo
         for card in reversed(temp_hand_list):
             self.mano.apilar(card)
 
-        print(f"DEBUG: Mano después de jugar/buscar: {self.mano.get_display_string()}")
+        print(f"DEBUG: Mano despues de jugar/buscar: {self.mano.get_display_string()}")
         return best_match_card
 
     def _can_play_card(self, carta_en_mesa: Carta) -> bool:
-        """
-        Verifica si el jugador tiene alguna carta compatible con la carta en mesa,
-        buscando si alguna carta coincide en número O en color.
-        Retorna True si encuentra una, False en caso contrario. No modifica la mano.
-        """
         actual = self.mano.cima 
         while actual:
             card = actual.carta
@@ -540,6 +538,7 @@ class Partida:
     def __init__(self):
         self.mazo_reserva: ListaCartas = ListaCartas()
         self.carta_en_mesa: Union[Carta, None] = None
+        self.pila_historial_mesa = PilaCartasMesa()
         self.jugadores: ListaGenerica = ListaGenerica() 
         self._initial_player_names_template: ListaGenerica = ListaGenerica()
         self._initial_deck_template: ListaCartas = ListaCartas()
@@ -551,7 +550,7 @@ class Partida:
     def set_initial_deck_template(self, initial_cards: ListaCartas):
         self._initial_deck_template.clear() 
         if initial_cards.primero is None:
-            print("DEBUG: Mazo inicial de plantilla vacío o nulo.")
+            print("DEBUG: Mazo inicial de plantilla vacio o nulo.")
             return
 
         current_node = initial_cards.primero
@@ -578,7 +577,7 @@ class Partida:
     def _get_copy_from_template_deck(self, template_deck: ListaCartas) -> ListaCartas:
         new_deck = ListaCartas()
         if not template_deck.primero:
-            print("DEBUG: La plantilla del mazo inicial (pasada como argumento) está vacía. No se puede crear una copia.")
+            print("DEBUG: La plantilla del mazo inicial (pasada como argumento) esta vacia. No se puede crear una copia.")
             return new_deck
 
         current_node = template_deck.primero
@@ -628,7 +627,7 @@ class Partida:
         self.partida_name = partida_name
         
         self.mazo_reserva = self._get_copy_from_template_deck(initial_deck_template)
-        print(f"DEBUG: Mazo de reserva después de copiar plantilla: {self.mazo_reserva.get_display_string()}")
+        print(f"DEBUG: Mazo de reserva despues de copiar plantilla: {self.mazo_reserva.get_display_string()}")
         
         self.jugadores.clear() 
         current_name_node = player_names_template.primero
@@ -652,14 +651,14 @@ class Partida:
             self.shuffles_config.agregar_final(current_shuffle_node.data)
             current_shuffle_node = current_shuffle_node.siguiente
         
-        print(f"DEBUG: Configuración de shuffles para esta partida: {self.shuffles_config.get_display_string()}")
+        print(f"DEBUG: Configuracion de shuffles para esta partida: {self.shuffles_config.get_display_string()}")
 
 
     def apply_shuffles(self, log_callback=None):
         if self.mazo_reserva.size == 0:
             if log_callback:
-                log_callback("Error: No hay mazo de reserva para aplicar shuffles o está vacío.")
-            print("DEBUG: Mazo de reserva vacío para shuffles.")
+                log_callback("Error: No hay mazo de reserva para aplicar shuffles o esta vacio.")
+            print("DEBUG: Mazo de reserva vacio para shuffles.")
             return
 
         if self.shuffles_config.size == 0:
@@ -668,7 +667,7 @@ class Partida:
             print("DEBUG: No hay shuffles definidos.")
             return
 
-        print("DEBUG: Iniciando aplicación de shuffles...")
+        print("DEBUG: Iniciando aplicacion de shuffles...")
         current_shuffle_info_node = self.shuffles_config.primero
         while current_shuffle_info_node:
             shuffle_info = current_shuffle_info_node.data
@@ -696,9 +695,9 @@ class Partida:
                 print(f"DEBUG: Tipo de shuffle desconocido: {shuffle_type}")
 
             if log_callback:
-                log_callback("Mazo después del shuffle:")
+                log_callback("Mazo despues del shuffle:")
                 log_callback(self.mazo_reserva.get_display_string())
-            print(f"DEBUG: Mazo después del shuffle: {self.mazo_reserva.get_display_string()}")
+            print(f"DEBUG: Mazo despues del shuffle: {self.mazo_reserva.get_display_string()}")
 
             current_shuffle_info_node = current_shuffle_info_node.siguiente
         print("DEBUG: Todos los shuffles aplicados.")
@@ -725,22 +724,22 @@ class Partida:
                 card = self.mazo_reserva.pop_from_tail()
                 if card:
                     player.agregar_carta_a_mano(card)
-                    print(f"DEBUG: {player.nombre} recibió carta {card}.")
+                    print(f"DEBUG: {player.nombre} recibio carta {card}.")
                 else:
                     if log_callback:
-                        log_callback(f"Advertencia: Mazo vacío. {player.nombre} no recibió sus {cards_to_deal_per_player - i} cartas restantes.")
-                    print(f"DEBUG: Advertencia: Mazo vacío. {player.nombre} no recibió sus {cards_to_deal_per_player - i} cartas restantes.")
+                        log_callback(f"Advertencia: Mazo vacio. {player.nombre} no recibio sus {cards_to_deal_per_player - i} cartas restantes.")
+                    print(f"DEBUG: Advertencia: Mazo vacio. {player.nombre} no recibio sus {cards_to_deal_per_player - i} cartas restantes.")
                     break
 
             if log_callback:
                 log_callback(f"Mano de {player.nombre}: {player.mano.get_display_string()}")
-            print(f"DEBUG: Mano final de {player.nombre} después de reparto: {player.mano.get_display_string()}")
+            print(f"DEBUG: Mano final de {player.nombre} despues de reparto: {player.mano.get_display_string()}")
             current_player_node = current_player_node.siguiente
 
-        # La primera carta en mesa es de la mano del primer jugador
+        # Primera carta de la partida
         first_player: Jugador = self.jugadores.obtener_por_indice(0)
         if first_player and not first_player.mano.esta_vacia():
-            # Desapilar la primera carta de la mano del primer jugador para ponerla en la mesa
+            # Quitar la primera carta de la mano del primer jugador para ponerla en la mesa
             self.carta_en_mesa = first_player.mano.desapilar()
             if self.carta_en_mesa:
                 if log_callback:
@@ -748,19 +747,19 @@ class Partida:
                 print(f"DEBUG: Primera carta colocada en mesa (del jugador {first_player.nombre}): {self.carta_en_mesa}")
             else:
                 if log_callback:
-                    log_callback(f"Advertencia: La mano de {first_player.nombre} se vació inesperadamente al intentar poner la primera carta en mesa.")
-                print(f"DEBUG: Advertencia: Mano de {first_player.nombre} vacía al colocar carta en mesa.")
+                    log_callback(f"Advertencia: La mano de {first_player.nombre} se vacio inesperadamente al intentar poner la primera carta en mesa.")
+                print(f"DEBUG: Advertencia: Mano de {first_player.nombre} vacia al colocar carta en mesa.")
         else:
             if log_callback:
                 log_callback("Error: No se pudo colocar la primera carta en la mesa (el primer jugador no tiene cartas o no existe).")
             print("DEBUG: ERROR: No se pudo colocar la primera carta en mesa desde el primer jugador.")
         
-        # Después de que el primer jugador pone la carta inicial, el turno pasa al siguiente
+        # Despues de que el primer jugador pone la carta inicial, el turno pasa al siguiente
         self.current_player_index = (self.current_player_index + 1) % self.jugadores.size
         next_player_for_first_turn: Jugador = self.jugadores.obtener_por_indice(self.current_player_index)
         if next_player_for_first_turn and log_callback:
             log_callback(f"El primer turno de juego es para: {next_player_for_first_turn.nombre}")
-        print(f"DEBUG: Después de colocar la primera carta, el turno inicial de juego es para: {next_player_for_first_turn.nombre}")
+        print(f"DEBUG: Despues de colocar la primera carta, el turno inicial de juego es para: {next_player_for_first_turn.nombre}")
 
 
     def get_mazo_display_string(self) -> str:
@@ -790,58 +789,59 @@ class Partida:
 
         card_played_this_turn = None 
         
-        # 1. Intento inicial de jugar una carta de la mano actual
+        # jugar una carta de la mano actual
         played_card_initial_attempt = current_player.jugar_carta_de_mano(self.carta_en_mesa)
 
         if played_card_initial_attempt:
             # El jugador pudo jugar una carta desde el principio
             card_played_this_turn = played_card_initial_attempt
             if log_callback:
-                log_callback(f"{current_player.nombre} jugó: {card_played_this_turn}")
-            print(f"DEBUG: {current_player.nombre} jugó: {card_played_this_turn}. Mano restante: {current_player.mano.get_display_string()}")
+                log_callback(f"{current_player.nombre} jugo: {card_played_this_turn}")
+            print(f"DEBUG: {current_player.nombre} jugo: {card_played_this_turn}. Mano restante: {current_player.mano.get_display_string()}")
         else:
-            # 2. El jugador no pudo jugar inicialmente, debe robar
+            # 2. El jugador no tiene cartas que coincidadan asi que robad del maso de reserva
             if self.mazo_reserva.size > 0: 
                 card_drawn = self.mazo_reserva.pop_from_tail() 
                 if card_drawn:
                     current_player.agregar_carta_a_mano(card_drawn)
                     if log_callback:
-                        log_callback(f"{current_player.nombre} no pudo jugar y robó: {card_drawn}")
-                    print(f"DEBUG: {current_player.nombre} robó carta: {card_drawn}. Nueva mano: {current_player.mano.get_display_string()}")
+                        log_callback(f"{current_player.nombre} no pudo jugar y robo: {card_drawn}")
+                    print(f"DEBUG: {current_player.nombre} robo carta: {card_drawn}. Nueva mano: {current_player.mano.get_display_string()}")
 
-                    # 3. Después de robar, intentar jugar de nuevo con la mano actualizada
+                    # Luego de robar, se vuelve a analizar
                     played_card_after_draw = current_player.jugar_carta_de_mano(self.carta_en_mesa)
                     if played_card_after_draw:
                         card_played_this_turn = played_card_after_draw
                         if log_callback:
-                            log_callback(f"{current_player.nombre} robó y luego jugó: {card_played_this_turn}")
-                        print(f"DEBUG: {current_player.nombre} robó y luego jugó: {card_played_this_turn}. Mano restante: {current_player.mano.get_display_string()}")
+                            log_callback(f"{current_player.nombre} robo y luego jugo: {card_played_this_turn}")
+                        print(f"DEBUG: {current_player.nombre} robo y luego jugo: {card_played_this_turn}. Mano restante: {current_player.mano.get_display_string()}")
                     else:
-                        # Robó, pero aún no pudo jugar. El turno finaliza aquí sin jugar carta.
+                        # Robo, pero aun no pudo jugar. El turno finaliza aqui sin jugar carta.
                         if log_callback:
-                            log_callback(f"{current_player.nombre} robó, pero aún no pudo jugar. Pasa turno.")
-                        print(f"DEBUG: {current_player.nombre} robó, pero aún no pudo jugar. Pasa turno.")
+                            log_callback(f"{current_player.nombre} robo, pero aun no pudo jugar. Pasa turno.")
+                        print(f"DEBUG: {current_player.nombre} robo, pero aun no pudo jugar. Pasa turno.")
                 else: 
                     if log_callback:
-                        log_callback(f"Advertencia: Mazo de reserva vacío al intentar robar. {current_player.nombre} pasa turno.")
-                    print(f"DEBUG: Advertencia: Mazo de reserva vacío al intentar robar.")
+                        log_callback(f"Advertencia: Mazo de reserva vacio al intentar robar. {current_player.nombre} pasa turno.")
+                    print(f"DEBUG: Advertencia: Mazo de reserva vacio al intentar robar.")
             else:
                 if log_callback:
-                    log_callback(f"{current_player.nombre} no pudo jugar y el mazo de reserva está vacío. Pasa turno.")
-                print(f"DEBUG: Mazo de reserva vacío. {current_player.nombre} pasa turno.")
+                    log_callback(f"{current_player.nombre} no pudo jugar y el mazo de reserva esta vacio. Pasa turno.")
+                print(f"DEBUG: Mazo de reserva vacio. {current_player.nombre} pasa turno.")
 
-        # Actualizar la carta en mesa si se jugó una carta en este turno
+        # Actualizar la carta en mesa si se jugo una carta en este turno
         if card_played_this_turn:
             self.carta_en_mesa = card_played_this_turn
+            self.pila_historial_mesa.apilar(card_played_this_turn)
 
-        # Verificar condición de victoria (solo si se jugó una carta y la mano está vacía)
+        # Verificar condicion de victoria (solo si se jugo una carta y la mano esta vacia)
         if card_played_this_turn and current_player.mano.esta_vacia():
             if log_callback:
                 log_callback(f"¡{current_player.nombre} se ha quedado sin cartas! ¡{current_player.nombre} es el ganador!")
             print(f"DEBUG: ¡{current_player.nombre} ha ganado!")
             return False 
 
-        # Verificar si la partida se estanca (mazo vacío Y ningún jugador puede hacer un movimiento)
+        # Verificar si la partida se estanca (mazo vacio Y ningun jugador puede hacer un movimiento)
         if self.mazo_reserva.size == 0 and not card_played_this_turn:
             all_players_cannot_play = True
             for i in range(self.jugadores.size):
@@ -852,8 +852,8 @@ class Partida:
             
             if all_players_cannot_play:
                 if log_callback:
-                    log_callback("El mazo de reserva está vacío y ningún jugador puede hacer un movimiento. La partida termina en empate.")
-                print("DEBUG: Mazo de reserva vacío y ningún jugador puede moverse. Fin de la partida (empate).")
+                    log_callback("El mazo de reserva esta vacio y ningun jugador puede hacer un movimiento. La partida termina en empate.")
+                print("DEBUG: Mazo de reserva vacio y ningun jugador puede moverse. Fin de la partida (empate).")
                 return False
 
         # Avanzar al siguiente jugador.
@@ -863,3 +863,4 @@ class Partida:
             log_callback(f"Siguiente turno para: {next_player.nombre}")
         
         return True 
+    

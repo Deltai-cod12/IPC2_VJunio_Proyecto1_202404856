@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='utf-8'?>
+<partida_jugada>
+	<resumen>
+		<ganador>Pedro Pineda</ganador>
+		<total_pasos>140</total_pasos>
+	</resumen>
+	<pasos>
+		<paso n="1">Repartiendo 7 cartas a cada jugador en bloques consecutivos...</paso>
+		<paso n="2">Mano de Juana del Arco: 7 (#39843e) -&gt; 1 (#39843e) -&gt; 2 (#eFC12C) -&gt; 7 (#eFC12C) -&gt; 3 (#39843e) -&gt; 6 (#39843e) -&gt; 9 (#15629b)</paso>
+		<paso n="3">Mano de Maria Quintana: 4 (#39843e) -&gt; 1 (#eFC12C) -&gt; 3 (#eFC12C) -&gt; 6 (#39843e) -&gt; 7 (#39843e) -&gt; 9 (#eFC12C) -&gt; 9 (#eFC12C)</paso>
+		<paso n="4">Mano de Sarah Junior: 7 (#eFC12C) -&gt; 5 (#eFC12C) -&gt; 9 (#39843e) -&gt; 2 (#39843e) -&gt; 6 (#c72623) -&gt; 8 (#eFC12C) -&gt; 1 (#39843e)</paso>
+		<paso n="5">Mano de Pedro Pineda: 6 (#eFC12C) -&gt; 8 (#c72623) -&gt; 2 (#eFC12C) -&gt; 9 (#15629b) -&gt; 3 (#c72623) -&gt; 7 (#15629b) -&gt; 8 (#39843e)</paso>
+		<paso n="6">Primera carta en mesa (del jugador Juana del Arco): 7 (#39843e)</paso>
+		<paso n="7">El primer turno de juego es para: Maria Quintana</paso>
+		<paso n="8">
+Turno de Maria Quintana. Carta en mesa: 7 (#39843e)</paso>
+		<paso n="9">Mano de Maria Quintana: 4 (#39843e) -&gt; 1 (#eFC12C) -&gt; 3 (#eFC12C) -&gt; 6 (#39843e) -&gt; 7 (#39843e) -&gt; 9 (#eFC12C) -&gt; 9 (#eFC12C)</paso>
+		<paso n="10">Maria Quintana jugo: 4 (#39843e)</paso>
+		<paso n="11">Siguiente turno para: Sarah Junior</paso>
+		<paso n="12">
+Turno de Sarah Junior. Carta en mesa: 4 (#39843e)</paso>
+		<paso n="13">Mano de Sarah Junior: 7 (#eFC12C) -&gt; 5 (#eFC12C) -&gt; 9 (#39843e) -&gt; 2 (#39843e) -&gt; 6 (#c72623) -&gt; 8 (#eFC12C) -&gt; 1 (#39843e)</paso>
+		<paso n="14">Sarah Junior jugo: 9 (#39843e)</paso>
+		<paso n="15">Siguiente turno para: Pedro Pineda</paso>
+		<paso n="16">
+Turno de Pedro Pineda. Carta en mesa: 9 (#39843e)</paso>
+		<paso n="17">Mano de Pedro Pineda: 6 (#eFC12C) -&gt; 8 (#c72623) -&gt; 2 (#eFC12C) -&gt; 9 (#15629b) -&gt; 3 (#c72623) -&gt; 7 (#15629b) -&gt; 8 (#39843e)</paso>
+		<paso n="18">Pedro Pineda jugo: 9 (#15629b)</paso>
+		<paso n="19">Siguiente turno para: Juana del Arco</paso>
+		<paso n="20">
+Turno de Juana del Arco. Carta en mesa: 9 (#15629b)</paso>
+		<paso n="21">Mano de Juana del Arco: 1 (#39843e) -&gt; 2 (#eFC12C) -&gt; 7 (#eFC12C) -&gt; 3 (#39843e) -&gt; 6 (#39843e) -&gt; 9 (#15629b)</paso>
+		<paso n="22">Juana del Arco jugo: 9 (#15629b)</paso>
+		<paso n="23">Siguiente turno para: Maria Quintana</paso>
+		<paso n="24">
+Turno de Maria Quintana. Carta en mesa: 9 (#15629b)</paso>
+		<paso n="25">Mano de Maria Quintana: 1 (#eFC12C) -&gt; 3 (#eFC12C) -&gt; 6 (#39843e) -&gt; 7 (#39843e) -&gt; 9 (#eFC12C) -&gt; 9 (#eFC12C)</paso>
+		<paso n="26">Maria Quintana jugo: 9 (#eFC12C)</paso>
+		<paso n="27">Siguiente turno para: Sarah Junior</paso>
+		<paso n="28">
+Turno de Sarah Junior. Carta en mesa: 9 (#eFC12C)</paso>
+		<paso n="29">Mano de Sarah Junior: 7 (#eFC12C) -&gt; 5 (#eFC12C) -&gt; 2 (#39843e) -&gt; 6 (#c72623) -&gt; 8 (#eFC12C) -&gt; 1 (#39843e)</paso>
+		<paso n="30">Sarah Junior jugo: 7 (#eFC12C)</paso>
+		<paso n="31">Siguiente turno para: Pedro Pineda</paso>
+		<paso n="32">
+Turno de Pedro Pineda. Carta en mesa: 7 (#eFC12C)</paso>
+		<paso n="33">Mano de Pedro Pineda: 6 (#eFC12C) -&gt; 8 (#c72623) -&gt; 2 (#eFC12C) -&gt; 3 (#c72623) -&gt; 7 (#15629b) -&gt; 8 (#39843e)</paso>
+		<paso n="34">Pedro Pineda jugo: 6 (#eFC12C)</paso>
+		<paso n="35">Siguiente turno para: Juana del Arco</paso>
+		<paso n="36">
+Turno de Juana del Arco. Carta en mesa: 6 (#eFC12C)</paso>
+		<paso n="37">Mano de Juana del Arco: 1 (#39843e) -&gt; 2 (#eFC12C) -&gt; 7 (#eFC12C) -&gt; 3 (#39843e) -&gt; 6 (#39843e)</paso>
+		<paso n="38">Juana del Arco jugo: 2 (#eFC12C)</paso>
+		<paso n="39">Siguiente turno para: Maria Quintana</paso>
+		<paso n="40">
+Turno de Maria Quintana. Carta en mesa: 2 (#eFC12C)</paso>
+		<paso n="41">Mano de Maria Quintana: 1 (#eFC12C) -&gt; 3 (#eFC12C) -&gt; 6 (#39843e) -&gt; 7 (#39843e) -&gt; 9 (#eFC12C)</paso>
+		<paso n="42">Maria Quintana jugo: 1 (#eFC12C)</paso>
+		<paso n="43">Siguiente turno para: Sarah Junior</paso>
+		<paso n="44">
+Turno de Sarah Junior. Carta en mesa: 1 (#eFC12C)</paso>
+		<paso n="45">Mano de Sarah Junior: 5 (#eFC12C) -&gt; 2 (#39843e) -&gt; 6 (#c72623) -&gt; 8 (#eFC12C) -&gt; 1 (#39843e)</paso>
+		<paso n="46">Sarah Junior jugo: 5 (#eFC12C)</paso>
+		<paso n="47">Siguiente turno para: Pedro Pineda</paso>
+		<paso n="48">
+Turno de Pedro Pineda. Carta en mesa: 5 (#eFC12C)</paso>
+		<paso n="49">Mano de Pedro Pineda: 8 (#c72623) -&gt; 2 (#eFC12C) -&gt; 3 (#c72623) -&gt; 7 (#15629b) -&gt; 8 (#39843e)</paso>
+		<paso n="50">Pedro Pineda jugo: 2 (#eFC12C)</paso>
+		<paso n="51">Siguiente turno para: Juana del Arco</paso>
+		<paso n="52">
+Turno de Juana del Arco. Carta en mesa: 2 (#eFC12C)</paso>
+		<paso n="53">Mano de Juana del Arco: 1 (#39843e) -&gt; 7 (#eFC12C) -&gt; 3 (#39843e) -&gt; 6 (#39843e)</paso>
+		<paso n="54">Juana del Arco jugo: 7 (#eFC12C)</paso>
+		<paso n="55">Siguiente turno para: Maria Quintana</paso>
+		<paso n="56">
+Turno de Maria Quintana. Carta en mesa: 7 (#eFC12C)</paso>
+		<paso n="57">Mano de Maria Quintana: 3 (#eFC12C) -&gt; 6 (#39843e) -&gt; 7 (#39843e) -&gt; 9 (#eFC12C)</paso>
+		<paso n="58">Maria Quintana jugo: 3 (#eFC12C)</paso>
+		<paso n="59">Siguiente turno para: Sarah Junior</paso>
+		<paso n="60">
+Turno de Sarah Junior. Carta en mesa: 3 (#eFC12C)</paso>
+		<paso n="61">Mano de Sarah Junior: 2 (#39843e) -&gt; 6 (#c72623) -&gt; 8 (#eFC12C) -&gt; 1 (#39843e)</paso>
+		<paso n="62">Sarah Junior jugo: 8 (#eFC12C)</paso>
+		<paso n="63">Siguiente turno para: Pedro Pineda</paso>
+		<paso n="64">
+Turno de Pedro Pineda. Carta en mesa: 8 (#eFC12C)</paso>
+		<paso n="65">Mano de Pedro Pineda: 8 (#c72623) -&gt; 3 (#c72623) -&gt; 7 (#15629b) -&gt; 8 (#39843e)</paso>
+		<paso n="66">Pedro Pineda jugo: 8 (#c72623)</paso>
+		<paso n="67">Siguiente turno para: Juana del Arco</paso>
+		<paso n="68">
+Turno de Juana del Arco. Carta en mesa: 8 (#c72623)</paso>
+		<paso n="69">Mano de Juana del Arco: 1 (#39843e) -&gt; 3 (#39843e) -&gt; 6 (#39843e)</paso>
+		<paso n="70">Juana del Arco no pudo jugar y robo: 3 (#15629b)</paso>
+		<paso n="71">Juana del Arco robo, pero aun no pudo jugar. Pasa turno.</paso>
+		<paso n="72">Siguiente turno para: Maria Quintana</paso>
+		<paso n="73">
+Turno de Maria Quintana. Carta en mesa: 8 (#c72623)</paso>
+		<paso n="74">Mano de Maria Quintana: 6 (#39843e) -&gt; 7 (#39843e) -&gt; 9 (#eFC12C)</paso>
+		<paso n="75">Maria Quintana no pudo jugar y robo: 8 (#15629b)</paso>
+		<paso n="76">Maria Quintana robo y luego jugo: 8 (#15629b)</paso>
+		<paso n="77">Siguiente turno para: Sarah Junior</paso>
+		<paso n="78">
+Turno de Sarah Junior. Carta en mesa: 8 (#15629b)</paso>
+		<paso n="79">Mano de Sarah Junior: 2 (#39843e) -&gt; 6 (#c72623) -&gt; 1 (#39843e)</paso>
+		<paso n="80">Sarah Junior no pudo jugar y robo: 4 (#c72623)</paso>
+		<paso n="81">Sarah Junior robo, pero aun no pudo jugar. Pasa turno.</paso>
+		<paso n="82">Siguiente turno para: Pedro Pineda</paso>
+		<paso n="83">
+Turno de Pedro Pineda. Carta en mesa: 8 (#15629b)</paso>
+		<paso n="84">Mano de Pedro Pineda: 3 (#c72623) -&gt; 7 (#15629b) -&gt; 8 (#39843e)</paso>
+		<paso n="85">Pedro Pineda jugo: 7 (#15629b)</paso>
+		<paso n="86">Siguiente turno para: Juana del Arco</paso>
+		<paso n="87">
+Turno de Juana del Arco. Carta en mesa: 7 (#15629b)</paso>
+		<paso n="88">Mano de Juana del Arco: 3 (#15629b) -&gt; 1 (#39843e) -&gt; 3 (#39843e) -&gt; 6 (#39843e)</paso>
+		<paso n="89">Juana del Arco jugo: 3 (#15629b)</paso>
+		<paso n="90">Siguiente turno para: Maria Quintana</paso>
+		<paso n="91">
+Turno de Maria Quintana. Carta en mesa: 3 (#15629b)</paso>
+		<paso n="92">Mano de Maria Quintana: 6 (#39843e) -&gt; 7 (#39843e) -&gt; 9 (#eFC12C)</paso>
+		<paso n="93">Maria Quintana no pudo jugar y robo: 5 (#c72623)</paso>
+		<paso n="94">Maria Quintana robo, pero aun no pudo jugar. Pasa turno.</paso>
+		<paso n="95">Siguiente turno para: Sarah Junior</paso>
+		<paso n="96">
+Turno de Sarah Junior. Carta en mesa: 3 (#15629b)</paso>
+		<paso n="97">Mano de Sarah Junior: 4 (#c72623) -&gt; 2 (#39843e) -&gt; 6 (#c72623) -&gt; 1 (#39843e)</paso>
+		<paso n="98">Sarah Junior no pudo jugar y robo: 2 (#15629b)</paso>
+		<paso n="99">Sarah Junior robo y luego jugo: 2 (#15629b)</paso>
+		<paso n="100">Siguiente turno para: Pedro Pineda</paso>
+		<paso n="101">
+Turno de Pedro Pineda. Carta en mesa: 2 (#15629b)</paso>
+		<paso n="102">Mano de Pedro Pineda: 3 (#c72623) -&gt; 8 (#39843e)</paso>
+		<paso n="103">Pedro Pineda no pudo jugar y robo: 4 (#15629b)</paso>
+		<paso n="104">Pedro Pineda robo y luego jugo: 4 (#15629b)</paso>
+		<paso n="105">Siguiente turno para: Juana del Arco</paso>
+		<paso n="106">
+Turno de Juana del Arco. Carta en mesa: 4 (#15629b)</paso>
+		<paso n="107">Mano de Juana del Arco: 1 (#39843e) -&gt; 3 (#39843e) -&gt; 6 (#39843e)</paso>
+		<paso n="108">Juana del Arco no pudo jugar y robo: 6 (#c72623)</paso>
+		<paso n="109">Juana del Arco robo, pero aun no pudo jugar. Pasa turno.</paso>
+		<paso n="110">Siguiente turno para: Maria Quintana</paso>
+		<paso n="111">
+Turno de Maria Quintana. Carta en mesa: 4 (#15629b)</paso>
+		<paso n="112">Mano de Maria Quintana: 5 (#c72623) -&gt; 6 (#39843e) -&gt; 7 (#39843e) -&gt; 9 (#eFC12C)</paso>
+		<paso n="113">Maria Quintana no pudo jugar y robo: 2 (#c72623)</paso>
+		<paso n="114">Maria Quintana robo, pero aun no pudo jugar. Pasa turno.</paso>
+		<paso n="115">Siguiente turno para: Sarah Junior</paso>
+		<paso n="116">
+Turno de Sarah Junior. Carta en mesa: 4 (#15629b)</paso>
+		<paso n="117">Mano de Sarah Junior: 4 (#c72623) -&gt; 2 (#39843e) -&gt; 6 (#c72623) -&gt; 1 (#39843e)</paso>
+		<paso n="118">Sarah Junior jugo: 4 (#c72623)</paso>
+		<paso n="119">Siguiente turno para: Pedro Pineda</paso>
+		<paso n="120">
+Turno de Pedro Pineda. Carta en mesa: 4 (#c72623)</paso>
+		<paso n="121">Mano de Pedro Pineda: 3 (#c72623) -&gt; 8 (#39843e)</paso>
+		<paso n="122">Pedro Pineda jugo: 3 (#c72623)</paso>
+		<paso n="123">Siguiente turno para: Juana del Arco</paso>
+		<paso n="124">
+Turno de Juana del Arco. Carta en mesa: 3 (#c72623)</paso>
+		<paso n="125">Mano de Juana del Arco: 6 (#c72623) -&gt; 1 (#39843e) -&gt; 3 (#39843e) -&gt; 6 (#39843e)</paso>
+		<paso n="126">Juana del Arco jugo: 6 (#c72623)</paso>
+		<paso n="127">Siguiente turno para: Maria Quintana</paso>
+		<paso n="128">
+Turno de Maria Quintana. Carta en mesa: 6 (#c72623)</paso>
+		<paso n="129">Mano de Maria Quintana: 2 (#c72623) -&gt; 5 (#c72623) -&gt; 6 (#39843e) -&gt; 7 (#39843e) -&gt; 9 (#eFC12C)</paso>
+		<paso n="130">Maria Quintana jugo: 2 (#c72623)</paso>
+		<paso n="131">Siguiente turno para: Sarah Junior</paso>
+		<paso n="132">
+Turno de Sarah Junior. Carta en mesa: 2 (#c72623)</paso>
+		<paso n="133">Mano de Sarah Junior: 2 (#39843e) -&gt; 6 (#c72623) -&gt; 1 (#39843e)</paso>
+		<paso n="134">Sarah Junior jugo: 2 (#39843e)</paso>
+		<paso n="135">Siguiente turno para: Pedro Pineda</paso>
+		<paso n="136">
+Turno de Pedro Pineda. Carta en mesa: 2 (#39843e)</paso>
+		<paso n="137">Mano de Pedro Pineda: 8 (#39843e)</paso>
+		<paso n="138">Pedro Pineda jugo: 8 (#39843e)</paso>
+		<paso n="139">¡Pedro Pineda se ha quedado sin cartas! ¡Pedro Pineda es el ganador!</paso>
+		<paso n="140">El jugador Pedro Pineda ha ganado</paso>
+	</pasos>
+</partida_jugada>
